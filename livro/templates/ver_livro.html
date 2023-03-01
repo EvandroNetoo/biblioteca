@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load filtros %}
+
+{% block 'head' %}{% endblock %}
+
+{% block 'titulo' %}Ver livro{% endblock %}
+
+
+{% block 'conteudo' %}
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Excluir livro</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que quer exluir o livro <b>{{ livro.nome }}</b>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Voltar</button>
+                <a href="{% url 'excluir_livro' livro.id %}" class="btn btn-danger btn-md">Excluir</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-2"></div>
+
+        <div class="col-md">
+            <br>
+            <h1>Livro</h1>
+            <hr>
+            <form method="POST" action="{% url 'atualizar_livro' livro.id %}">{% csrf_token %}
+                <label>Nome:</label>
+                <input type="text" class="form-control" value="{{ livro.nome }}" name="nome">
+                <br>
+                <label>Autor:</label>
+                <input type="text" class="form-control" value="{{ livro.autor }}" name="autor">
+                <br>
+                <label>Co-autor:</label>
+                <input type="text" class="form-control" value="{{ livro.co_autor }}" placeholder="Co-autor" name="co_autor">
+                <br>
+                <label>Categoria:</label>
+                <select class="form-control" name="categoria">
+                    {% for categoria in categorias %}
+                    {% if categoria == livro.categoria %}
+                    <option selected>{{ categoria }}</option>
+                    {% else %}
+                    <option>{{ categoria }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+                <br>
+                <label>Data de cadastro:</label>
+                <input type="text" class="form-control" value="{{ livro.data_cadastro }}" disabled>
+                <br>
+                {% if livro.emprestado %}
+                Emprestado: Sim <svg style="color: green" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                    <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z" />
+                </svg>
+                {% else %}
+                Emprestado: Não <svg style="color: red" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                </svg>
+                {% endif %}
+
+                <br>
+                <br>
+                <div style="display: flex; justify-content: space-between">
+                    <button class="btn btn-success btn-md" type="submit">Salvar</button>
+
+                    <a href="{% url 'home' %}" class="btn btn-secondary btn-md">Voltar</a>
+
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal">Excluir</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+    <hr>
+    <div style="justify-content: end; width: 100%;">
+        <h2 style="text-align: center">Histórico de empréstimo</h2>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Data do empéstimo</th>
+                <th scope="col">Data da devoluçao</th>
+                <th scope="col">Tempo de duração</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for emprestimo in emprestimos %}
+            <tr>
+                {% if emprestimo.nome_emprestado != None %}
+                <th>{{ emprestimo.nome_emprestado }}</th>
+                {% else %}
+                <th>{{ emprestimo.nome_emprestado_anonimo }}</th>
+                {% endif %}
+                <td>{{ emprestimo.data_emprestimo }}</td>
+                <td>
+                    {% if emprestimo.data_devolucao|mostra_duracao:emprestimo.data_emprestimo == 'Livro ainda não devolvido' %}
+                    Livro Ainda não devolvido
+                    {% else %}
+                    {{ emprestimo.data_devolucao }}
+                    {% endif %}
+                </td>
+                <td>{{ emprestimo.data_devolucao|mostra_duracao:emprestimo.data_emprestimo }}</td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+
+
+</div>
+
+{% endblock %}

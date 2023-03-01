@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block 'head' %}{% endblock %}
+
+{% block 'titulo' %}Cadastro{% endblock %}
+
+
+
+{% block 'conteudo' %}
+
+<div class="container">
+    <br>
+    {% if status == '1' %}
+        <div class="alert alert-danger" role="alert">
+            <strong><p class="text-center">Nome e e-mail são campos obrigatorios.</p></strong>
+        </div>
+    {% endif %}
+
+    {% if status == '2' %}
+        <div class="alert alert-danger" role="alert">
+            <strong><p class="text-center">A senha precisa ter no mínimo 8 caracteres.</p></strong>
+        </div>
+    {% endif %}
+
+    {% if status == '3' %}
+        <div class="alert alert-danger" role="alert">
+            <strong><p class="text-center">Email ja cadastrado.</p></strong>
+        </div>
+    {% endif %}
+
+    {% if status == '4' %}
+        <div class="alert alert-danger" role="alert">
+            <strong><p class="text-center">Ocorreu um erro interno ao cadastrar.</p></strong>
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-3">
+
+        </div>
+
+        <div class="col-md">
+            <h1>Cadastre-se</h1>
+            <hr>
+
+            <form method="POST" action="{% url 'valida_cadastro' %}">{% csrf_token %}
+                <label for="nome">Nome</label>
+                <input class="form-control" type="text" placeholder="Nome..." name="nome" id="nome" autocomplete="off">
+                <br>
+                <label for="email">Email</label>
+                <input class="form-control" type="email" placeholder="Email..." name="email" id="email" autocomplete="off">
+                <br>
+                <label for="senha">Senha</label>
+                <input class="form-control" type="password" placeholder="Senha..." name="senha" id="senha" autocomplete="off">
+                <br>
+
+                <div style="display: flex; justify-content: space-between;">
+                    <input class="btn btn-success btn-md" type="submit" value="Enviar">
+                    <div>
+                        Já tem conta?
+                        <a class="btn btn-secondary btn-md" href="{% url 'login' %}">Login</a>
+                    </div>
+                </div>
+
+
+            </form>
+
+        </div>
+
+        <div class="col-md-3">
+
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock %}
